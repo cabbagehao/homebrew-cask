@@ -9,7 +9,14 @@ cask "telari" do
 
   livecheck do
     url "https://dl.telari.app/appcast.xml"
-    strategy :sparkle, &:short_version
+    regex(/^(\d+(?:\.\d+)+)$/i)
+    strategy :sparkle do |items, regex|
+      items.filter_map do |item|
+        next unless item.short_version&.match?(regex)
+
+        item.short_version
+      end
+    end
   end
 
   depends_on macos: :ventura
